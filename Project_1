@@ -34,3 +34,16 @@ def avg_bill_length_by_island(penguins):
         count[island] = count.get(island, 0) + 1
     avg = {isl: round(total[isl] / count[isl], 2) for isl in total}
     return avg
+
+def avg_bill_depth_by_species(penguins):
+    total = {}
+    count = {}
+    for row in penguins:
+        species = row.get('species', '').strip()
+        depth = safe_float(row.get('bill_depth_mm', '').strip())
+        if species == "" or depth is None:
+            continue
+        total[species] = total.get(species, 0) + depth
+        count[species] = count.get(species, 0) + 1
+    avg = {sp: round(total[sp] / count[sp], 2) for sp in total}
+    return avg
