@@ -1,1 +1,36 @@
-def git 
+import csv
+def load_csv(penguins):
+    data = []
+    with open(penguins, mode='r') as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            if '' in row:
+                del row['']
+            data.append(row)
+    return data
+
+if __name__ == "__main__":
+    data = load_csv("penguins.csv")
+    print("Number of rows:", len(data))
+    print("Sample row:", data[0])
+
+def safe_float(value):
+    """Convert string to float, safely skipping bad or missing values."""
+    try:
+        return float(value)
+    except (ValueError, TypeError):
+        return None
+
+
+def avg_bill_length_by_island(penguins):
+    total = {}
+    count = {}
+    for row in penguins:
+        island = row.get('island', '').strip()
+        bill_len = safe_float(row.get('bill_length_mm', '').strip())
+        if island == "" or bill_len is None:
+            continue
+        total[island] = total.get(island, 0) + bill_len
+        count[island] = count.get(island, 0) + 1
+    avg = {isl: round(total[isl] / count[isl], 2) for isl in total}
+    return avg
