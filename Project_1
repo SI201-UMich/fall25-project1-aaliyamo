@@ -1,49 +1,38 @@
 import csv
-def load_csv(penguins):
+import unittest
+
+def load_data(filename):
+    """Reads a CSV file and returns a list of dictionaries."""
     data = []
-    with open(penguins, mode='r') as file:
-        reader = csv.DictReader(file)
-        for row in reader:
-            if '' in row:
-                del row['']
+    with open(filename, "r", encoding="utf-8") as infile:
+        csv_reader = csv.DictReader(infile)
+        for row in csv_reader:
             data.append(row)
     return data
 
-if __name__ == "__main__":
-    data = load_csv("penguins.csv")
-    print("Number of rows:", len(data))
-    print("Sample row:", data[0])
 
 def safe_float(value):
-    """Convert string to float, safely skipping bad or missing values."""
+    """Safely convert strings like 'NA', '', 'NaN' to float or None."""
     try:
-        return float(value)
+        val = float(value)
+        return val
     except (ValueError, TypeError):
         return None
-
-
-def avg_bill_length_by_island(penguins):
-    total = {}
-    count = {}
-    for row in penguins:
-        island = row.get('island', '').strip()
-        bill_len = safe_float(row.get('bill_length_mm', '').strip())
-        if island == "" or bill_len is None:
+    
+def avg_bill_length_by_island_and_year(data):
+    results = {}
+    for row in data:
+        island = row.get("island", "")
+        year = row.get("year", "")
+        bill_length = safe_float(row.get("bill_length_mm", ""))
+        if not island or not year or bill_length is None:
             continue
-        total[island] = total.get(island, 0) + bill_len
-        count[island] = count.get(island, 0) + 1
-    avg = {isl: round(total[isl] / count[isl], 2) for isl in total}
+        key = (island, year)
+        if key not in results:
+            results[key] = {"total": 0, "count": 0}
+        results[key]["total"] += bill_length
+        results[key]["count"] += 1
+    avg = {f"{island} ({year})": round(v["total"] / v["count"], 2)
+           for (island, year), v in results.items()}
     return avg
 
-def avg_bill_depth_by_species(penguins):
-    total = {}
-    count = {}
-    for row in penguins:
-        species = row.get('species', '').strip()
-        depth = safe_float(row.get('bill_depth_mm', '').strip())
-        if species == "" or depth is None:
-            continue
-        total[species] = total.get(species, 0) + depth
-        count[species] = count.get(species, 0) + 1
-    avg = {sp: round(total[sp] / count[sp], 2) for sp in total}
-    return avg
