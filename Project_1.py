@@ -18,6 +18,7 @@ def safe_float(value):
         return val
     except (ValueError, TypeError):
         return None
+    
 # Farah's Functions
 def avg_body_mass_by_species_and_sex(data):
     results = {}
@@ -95,6 +96,7 @@ def body_mass_difference_by_sex_and_island(data):
             female_avg = temp[female_key]["total"] / temp[female_key]["count"]
             results[island] = round(male_avg - female_avg, 2)
     return results
+
 # Aili's Functions
 def bill_depth_vs_flipper_length_by_species(data):
     results = {}
@@ -204,5 +206,7 @@ if __name__ == "__main__":
     main()               
     print("\nRunning unit tests...\n")
     unittest.main(argv=[''], verbosity=2, exit=False)
+
+
 
 
